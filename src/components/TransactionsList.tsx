@@ -218,7 +218,7 @@ export function TransactionsList({
             📄
           </div>
           <h3 className="text-lg font-medium mb-2">No transactions found</h3>
-          <p className="text-sm">No transactions match your current filters.</p>
+          <p className="text-sm">You don&apos;t have any transactions yet.</p>
         </div>
       </div>
     );
@@ -294,15 +294,36 @@ export function TransactionsList({
         </div>
       </div>
 
-      <List
-        height={600}
-        width="100%"
-        itemCount={currentTransactions.length}
-        itemSize={80}
-        itemData={currentTransactions}
-      >
-        {TransactionItem}
-      </List>
+      {currentTransactions.length > 0 ? (
+        <List
+          height={600}
+          width="100%"
+          itemCount={currentTransactions.length}
+          itemSize={80}
+          itemData={currentTransactions}
+        >
+          {TransactionItem}
+        </List>
+      ) : (
+        <div className="p-8 text-center">
+          <div className="text-gray-500">
+            <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl">🔎</div>
+            <h3 className="text-lg font-medium mb-2">No transactions match your filters</h3>
+            <p className="text-sm mb-4">Try adjusting your search or filter criteria.</p>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedType('all');
+                setSelectedCategory('all');
+                setCurrentPage(1);
+              }}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-interswitch-primary"
+            >
+              Clear filters
+            </button>
+          </div>
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">

@@ -6,7 +6,9 @@ import React, {
   useCallback,
   useMemo,
   ReactNode,
+  useRef,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { OAuth2User, AuthResponse } from '../types/auth';
 import {
   storeAuthSession,
@@ -14,6 +16,7 @@ import {
   clearAuthSession,
   getRefreshToken,
 } from '../lib/auth-utils';
+import router from 'next/router';
 
 interface AuthState {
   user: OAuth2User | null;
@@ -38,6 +41,9 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     isLoading: true,
     error: null,
   });
+
+  const checkSessionRef = useRef<() => Promise<void>>();
+  const isCheckingSession = useRef(false);
 
   const login = useCallback(async (email: string, password: string) => {
     setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
@@ -106,6 +112,8 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         isLoading: false,
         error: null,
       });
+
+      router.push('/login');
     }
   }, []);
 
@@ -131,15 +139,15 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         throw new Error(data.error_description || data.error || 'Token refresh failed');
       }
 
-      if (data.success && data.token) {
-        const currentSession = await getAuthSession();
-        if (currentSession) {
-          await storeAuthSession({
-            ...currentSession,
-            token: data.token,
-            expiresAt: Date.now() + data.token.expires_in * 1000,
-          });
-        }
+      if (data.success && data.token && data.session) {
+        await storeAuthSession(data.session);
+
+        setAuthState({
+          user: data.user || authState.user,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
 
         return true;
       } else {
@@ -147,21 +155,30 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
       }
     } catch (error) {
       console.error('Token refresh failed:', error);
-      await logout();
       return false;
     }
-  }, [logout]);
+  }, [authState.user]);
 
   const checkSession = useCallback(async () => {
+    if (isCheckingSession.current) {
+      return;
+    }
+
+    isCheckingSession.current = true;
+
     try {
       const session = await getAuthSession();
 
-      if (session?.user) {
-        setAuthState({
+      if (session?.user && session?.token) {
+        const newState = {
           user: session.user,
           isAuthenticated: true,
           isLoading: false,
           error: null,
+        };
+
+        flushSync(() => {
+          setAuthState(newState);
         });
       } else {
         setAuthState((prev) => ({ ...prev, isLoading: false }));
@@ -169,20 +186,28 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     } catch (error) {
       console.error('Session check failed:', error);
       setAuthState((prev) => ({ ...prev, isLoading: false }));
+    } finally {
+      isCheckingSession.current = false;
     }
   }, []);
 
-  useEffect(() => {
-    checkSession();
-  }, [checkSession]);
+  checkSessionRef.current = checkSession;
 
-  const value: AuthContextType = useMemo(() => ({
-    ...authState,
-    login,
-    logout,
-    refreshToken,
-    checkSession,
-  }), [authState, login, logout, refreshToken, checkSession]);
+  useEffect(() => {
+    if (checkSessionRef.current) {
+      checkSessionRef.current();
+    }
+  }, []);
+
+  const value: AuthContextType = useMemo(() => {
+    return {
+      ...authState,
+      login,
+      logout,
+      refreshToken,
+      checkSession,
+    };
+  }, [authState, login, logout, refreshToken, checkSession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

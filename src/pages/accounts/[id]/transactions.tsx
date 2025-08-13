@@ -13,7 +13,7 @@ import { DropdownOption } from '../../../components/ui/Dropdown';
 export default function AccountTransactions() {
   const router = useRouter();
   const { id } = router.query;
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [filterType, setFilterType] = useState<'all' | 'debit' | 'credit'>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -52,10 +52,13 @@ export default function AccountTransactions() {
   });
 
   React.useEffect(() => {
+    if (isLoading) {
+      return;
+    }
     if (!isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (!isAuthenticated) return null;
 

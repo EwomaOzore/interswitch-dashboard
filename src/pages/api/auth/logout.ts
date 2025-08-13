@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { clearAuthSession, getRefreshToken } from '../../../lib/auth-utils';
-import { LogoutRequest, AuthResponse, OAuth2Error } from '../../../types/auth';
+import { clearAuthSession } from '../../../lib/auth-utils';
+import { AuthResponse, OAuth2Error } from '../../../types/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<AuthResponse | OAuth2Error>) {
   if (req.method !== 'POST') {
@@ -11,18 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const { refresh_token }: LogoutRequest = req.body;
-
-    if (refresh_token) {
-      const storedRefreshToken = await getRefreshToken();
-      if (storedRefreshToken !== refresh_token) {
-        return res.status(400).json({
-          error: 'invalid_request',
-          error_description: 'Invalid refresh token',
-        });
-      }
-    }
-
     await clearAuthSession();
 
     return res.status(200).json({

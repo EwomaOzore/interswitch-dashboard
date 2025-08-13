@@ -47,16 +47,6 @@ export default function Dashboard() {
     });
   }, [accountsResponse?.accounts, filterType, sortBy, sortOrder]);
 
-  React.useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  if (!isAuthenticated && !isLoading) {
-    return null;
-  }
-
   if (isLoading) {
     return (
       <Layout>
@@ -70,6 +60,10 @@ export default function Dashboard() {
         </div>
       </Layout>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   const handleAccountClick = (account: Account) => {

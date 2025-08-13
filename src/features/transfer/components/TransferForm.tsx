@@ -14,7 +14,7 @@ const TransferFormSchema = z.object({
   beneficiaryAccountNumber: z
     .string()
     .min(10, 'Account number must be at least 10 digits')
-    .max(10, 'Account number must be exactly 10 digits')
+    .max(11, 'Account number must not exceed 11 digits')
     .regex(/^\d+$/, 'Account number must contain only digits'),
   amount: z
     .string()
@@ -179,11 +179,16 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
         label="To Account Number *"
         id="beneficiaryAccountNumber"
         type="text"
-        placeholder="Enter 10-digit account number"
+        inputMode="numeric"
+        pattern="\\d*"
+        maxLength={10}
+        placeholder="Enter account number (up to 10 digits)"
         error={errors.beneficiaryAccountNumber?.message}
         {...register('beneficiaryAccountNumber', {
           onChange: (e) => {
-            void handleBeneficiaryAccountChange(e.target.value);
+            const sanitized = e.target.value.replace(/\D/g, '').slice(0, 11);
+            e.target.value = sanitized;
+            void handleBeneficiaryAccountChange(sanitized);
           },
         })}
       />

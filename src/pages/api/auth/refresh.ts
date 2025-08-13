@@ -2,9 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   getRefreshToken,
   storeRefreshToken,
-  generateOAuth2Token,
   getUserById,
-  checkRateLimit
+  checkRateLimit,
+  createAuthSession
 } from '../../../lib/auth-utils';
 import { TokenRefreshRequest, AuthResponse, OAuth2Error } from '../../../types/auth';
 
@@ -57,13 +57,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       });
     }
 
-    const newToken = generateOAuth2Token(user);
+    const newSession = createAuthSession(user);
 
-    await storeRefreshToken(newToken.refresh_token);
+    await storeRefreshToken(newSession.token.refresh_token);
 
     return res.status(200).json({
       success: true,
-      token: newToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        permissions: user.permissions,
+        lastLogin: user.lastLogin,
+      },
+      token: newSession.token,
+      session: newSession,
       message: 'Token refreshed successfully',
     });
 

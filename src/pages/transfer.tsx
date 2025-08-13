@@ -9,7 +9,7 @@ import { Modal } from '../components/ui';
 
 export default function Transfer() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [transferData, setTransferData] = useState<TransferRequest | null>(null);
   const [isTransferring, setIsTransferring] = useState(false);
@@ -17,7 +17,6 @@ export default function Transfer() {
   const {
     data: accountsResponse,
     isLoading: accountsLoading,
-    error: accountsError,
   } = useQuery({
     queryKey: ['accounts'],
     queryFn: apiClient.getAccounts,
@@ -27,10 +26,13 @@ export default function Transfer() {
   const accounts = accountsResponse?.accounts || [];
 
   React.useEffect(() => {
+    if (isLoading) {
+      return;
+    }
     if (!isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (!isAuthenticated) return null;
 
@@ -67,26 +69,6 @@ export default function Transfer() {
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-64"></div>
           <div className="h-96 bg-gray-200 rounded-lg"></div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (accountsError) {
-    return (
-      <Layout>
-        <div className="text-center py-12">
-          <div className="text-danger mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Accounts</h3>
-          <p className="text-gray-500">Unable to load your accounts. Please try again later.</p>
         </div>
       </Layout>
     );

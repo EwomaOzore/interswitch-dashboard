@@ -29,6 +29,7 @@ export function Header({ onMenuClick }: Readonly<HeaderProps>) {
                 alt="Interswitch Banking"
                 width={150}
                 height={150}
+                priority
               />
             </div>
           </div>

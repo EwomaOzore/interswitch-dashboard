@@ -87,9 +87,15 @@ export function isTokenExpired(token: string): boolean {
     const decoded = base64Decode(payloadB64);
     const payload = JSON.parse(decoded);
 
+    if (!payload.exp) {
+      return true;
+    }
+
     const expiryTime = payload.exp * 1000;
     const currentTime = Date.now();
-    return currentTime >= expiryTime;
+    const isExpired = currentTime >= expiryTime;
+
+    return isExpired;
   } catch (error) {
     if (process.env.NODE_ENV === 'test') {
       try {
@@ -120,6 +126,10 @@ export async function storeAuthSession(session: AuthSession): Promise<void> {
 
     const encodedSession = base64Encode(JSON.stringify(session));
     localStorage.setItem(AUTH_SESSION_KEY, encodedSession);
+
+    if (session.token.refresh_token) {
+      await storeRefreshToken(session.token.refresh_token);
+    }
   } catch (error) {
     console.error('Failed to store auth session:', error);
     throw new Error('Failed to store authentication session');
@@ -144,7 +154,15 @@ export async function getAuthSession(): Promise<AuthSession | null> {
 
     const session: AuthSession = JSON.parse(base64Decode(encodedSession));
 
-    if (Date.now() >= session.expiresAt) {
+    if (!session.user || !session.token || !session.expiresAt) {
+      await clearAuthSession();
+      return null;
+    }
+
+    const now = Date.now();
+    const bufferTime = 5 * 60 * 1000;
+
+    if (now >= (session.expiresAt - bufferTime)) {
       await clearAuthSession();
       return null;
     }
@@ -224,7 +242,7 @@ export function hasRole(user: OAuth2User, role: string): boolean {
 
 export function createAuthSession(user: OAuth2User): AuthSession {
   const token = generateOAuth2Token(user);
-  const expiresAt = Date.now() + (token.expires_in * 1000);
+  const expiresAt = (Math.floor(Date.now() / 1000) + OAUTH_CONFIG.ACCESS_TOKEN_EXPIRY) * 1000;
 
   return {
     user,
