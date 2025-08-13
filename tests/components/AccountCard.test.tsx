@@ -63,8 +63,8 @@ describe("AccountCard", () => {
     const mockOnClick = jest.fn();
     render(<AccountCard account={mockAccount} onClick={mockOnClick} />);
 
-    const card = screen.getByRole("button");
-    fireEvent.keyPress(card, { key: "Enter", code: "Enter" });
+    const card = screen.getAllByRole("button")[0];
+    fireEvent.keyDown(card, { key: "Enter", code: "Enter" });
 
     expect(mockOnClick).toHaveBeenCalledWith(mockAccount);
   });

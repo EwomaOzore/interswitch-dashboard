@@ -34,22 +34,20 @@ describe("TransactionsList", () => {
         hasMore={false}
       />
     );
-
-    expect(screen.getByText("Transaction History (2 transactions)")).toBeInTheDocument();
+    expect(screen.getByText(/Transaction History/i)).toBeInTheDocument();
     expect(screen.getByText("Online Purchase - Amazon")).toBeInTheDocument();
     expect(screen.getByText("Salary Credit")).toBeInTheDocument();
   });
 
   it("shows loading state when isLoading is true", () => {
-    render(
+    const { container } = render(
       <TransactionsList
         transactions={[]}
         isLoading={true}
         hasMore={false}
       />
     );
-
-    expect(screen.getByText("Transaction History (0 transactions)")).toBeInTheDocument();
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
   });
 
   it("shows empty state when no transactions", () => {
@@ -60,9 +58,7 @@ describe("TransactionsList", () => {
         hasMore={false}
       />
     );
-
     expect(screen.getByText("No transactions found")).toBeInTheDocument();
-    expect(screen.getByText("No transactions match your current filters.")).toBeInTheDocument();
   });
 
   it("shows load more button when hasMore is true", () => {

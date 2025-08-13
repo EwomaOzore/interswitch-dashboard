@@ -10,11 +10,13 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { validateAccountNumber } from '../../../lib/mock-api';
 
 const TransferFormSchema = z.object({
-  sourceAccountId: z.string().min(1, 'Please select a source account'),
+  sourceAccountId: z
+    .string({ required_error: 'Please select a source account' })
+    .min(1, 'Please select a source account'),
   beneficiaryAccountNumber: z
     .string()
     .min(10, 'Account number must be at least 10 digits')
-    .max(11, 'Account number must not exceed 11 digits')
+    .max(10, 'Account number must be exactly 10 digits')
     .regex(/^\d+$/, 'Account number must contain only digits'),
   amount: z
     .string()
@@ -58,11 +60,13 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
+    setValue,
     reset,
   } = useForm<TransferFormData>({
     resolver: zodResolver(TransferFormSchema),
-    mode: 'onSubmit',
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
   });
 
   const sourceAccountId = watch('sourceAccountId');
@@ -95,7 +99,6 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
   const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const numericValue = value.replace(/\D/g, '').slice(0, 4);
-    e.target.value = numericValue;
     return numericValue;
   };
 
@@ -156,7 +159,7 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
                 placeholder="Select account"
                 label="From Account *"
                 size="md"
-                error={fieldState.error?.message}
+                error={fieldState.error ? 'Please select a source account' : undefined}
               />
               <input type="hidden" {...field} />
             </>
@@ -186,8 +189,8 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
         error={errors.beneficiaryAccountNumber?.message}
         {...register('beneficiaryAccountNumber', {
           onChange: (e) => {
-            const sanitized = e.target.value.replace(/\D/g, '').slice(0, 11);
-            e.target.value = sanitized;
+            const sanitized = e.target.value.replace(/\D/g, '').slice(0, 10);
+            setValue('beneficiaryAccountNumber', sanitized, { shouldValidate: true, shouldDirty: true });
             void handleBeneficiaryAccountChange(sanitized);
           },
         })}
@@ -354,7 +357,7 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
 
       <button
         type="submit"
-        disabled={!isValid || !isAmountValid || isLoading}
+        disabled={Boolean((selectedAccount && amount && amount > selectedAccount.balance) || isLoading)}
         className="w-full bg-interswitch-primary text-white py-3 px-4 rounded-md font-medium hover:bg-interswitch-dark focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? (

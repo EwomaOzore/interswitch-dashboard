@@ -135,7 +135,7 @@ export function Dropdown({
 
       {error && (
         <p className="mt-1 text-sm text-red-600" role="alert">
-          {error}
+          {error || 'Required'}
         </p>
       )}
     </div>

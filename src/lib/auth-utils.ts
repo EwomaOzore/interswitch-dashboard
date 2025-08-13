@@ -78,35 +78,29 @@ export function generateOAuth2Token(user: OAuth2User): OAuth2Token {
 
 export function isTokenExpired(token: string): boolean {
   try {
+    let payload: any;
+
     const parts = token.split('.');
-    if (parts.length !== 3) {
-      return true;
+    if (parts.length === 3) {
+      const payloadB64 = parts[1];
+      const decoded = base64Decode(payloadB64);
+      payload = JSON.parse(decoded);
+    } else {
+      const decoded = base64Decode(token);
+      payload = JSON.parse(decoded);
     }
 
-    const payloadB64 = parts[1];
-    const decoded = base64Decode(payloadB64);
-    const payload = JSON.parse(decoded);
-
-    if (!payload.exp) {
+    if (!payload || typeof payload.exp !== 'number') {
       return true;
     }
 
     const expiryTime = payload.exp * 1000;
     const currentTime = Date.now();
-    const isExpired = currentTime >= expiryTime;
-
-    return isExpired;
+    return currentTime >= expiryTime;
   } catch (error) {
-    if (process.env.NODE_ENV === 'test') {
-      try {
-        const decoded = base64Decode(token);
-        JSON.parse(decoded);
-        return false;
-      } catch {
-        return true;
-      }
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('Failed to parse token:', error);
     }
-    console.error('Failed to parse token:', error);
     return true;
   }
 }

@@ -35,8 +35,15 @@ export function AccountCard({
   };
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          onClick?.(account);
+        }
+      }}
       className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-full text-left"
       onClick={() => onClick?.(account)}
       aria-label={`${account.accountType} account ending in ${account.accountNumber.slice(-4)}`}
@@ -66,13 +73,13 @@ export function AccountCard({
         <div className="flex items-center justify-between">
           <span className="text-gray-600 text-sm">Current Balance</span>
           {showBalance && (
-            <button
+            <span
               onClick={handleToggleBalance}
-              className="text-interswitch-primary hover:text-interswitch-dark text-sm"
+              className="text-interswitch-primary hover:text-interswitch-dark text-sm cursor-pointer"
               aria-label={isBalanceVisible ? "Hide balance" : "Show balance"}
             >
               {isBalanceVisible ? "Hide" : "Show"}
-            </button>
+            </span>
           )}
         </div>
         <div className="text-2xl font-bold text-gray-800">
@@ -90,6 +97,6 @@ export function AccountCard({
           </span>
         </div>
       </div>
-    </button>
+    </div>
   );
 }

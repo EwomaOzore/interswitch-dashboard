@@ -138,6 +138,13 @@ npm run test:watch
 npm test -- --coverage
 ```
 
+### Run All Tests (Unit + E2E)
+
+```bash
+# Run unit tests, install Playwright browsers, and run E2E tests
+npm run test:all
+```
+
 ### E2E Tests
 
 ```bash
