@@ -1,0 +1,23 @@
+:root {
+    --color-interswitch-dark: #00425F;
+    --color-interswitch-primary: #479FC8;
+    --color-white: #FFFFFF;
+    --color-success: #28A745;
+    --color-danger: #E53935;
+    --gray-800: #1f2937;
+    --gray-600: #4b5563;
+    --gray-100: #f3f4f6;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+    --type-base: 16px;
+}
+
+.interswitch-theme {
+    --primary: var(--color-interswitch-primary);
+    --primary-dark: var(--color-interswitch-dark);
+    --success: var(--color-success);
+    --danger: var(--color-danger);
+}
