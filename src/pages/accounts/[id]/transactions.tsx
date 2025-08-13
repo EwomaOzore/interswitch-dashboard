@@ -105,22 +105,19 @@ export default function AccountTransactions() {
   return (
     <Layout>
       <div className="space-y-6">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleBack}
+            className="flex items-center space-x-2 text-gray-900 focus:ring-gray-500 hover:bg-gray-200 p-2 rounded-md"
+          >
+            <ArrowLeftIcon className="h-3 w-3" />
+            <span>Back to Dashboard</span>
+          </button>
+        </div>
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleBack}
-              className="flex items-center space-x-2"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-              <span>Back to Dashboard</span>
-            </Button>
-
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{account?.accountType} Account</h1>
-              <p className="text-gray-600">****{account?.accountNumber.slice(-4)}</p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{account?.accountType} Account</h1>
+            <p className="text-gray-600">****{account?.accountNumber.slice(-4)}</p>
           </div>
 
           <Button onClick={handleExportCSV} disabled={!transactionsData?.transactions.length}>
@@ -131,21 +128,20 @@ export default function AccountTransactions() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Transaction Type
-              </label>
               <Dropdown
                 options={transactionTypeOptions}
                 value={filterType}
                 onChange={(value) => setFilterType(value as 'all' | 'debit' | 'credit')}
                 placeholder="Select transaction type"
                 size="md"
+                label="Transaction Type"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
               <input
+                id="start-date"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
@@ -154,8 +150,9 @@ export default function AccountTransactions() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
               <input
+                id="end-date"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}

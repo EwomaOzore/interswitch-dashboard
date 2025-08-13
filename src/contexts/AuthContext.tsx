@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   ReactNode,
 } from 'react';
 import { OAuth2User, AuthResponse } from '../types/auth';
@@ -155,7 +156,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     try {
       const session = await getAuthSession();
 
-      if (session && session.user) {
+      if (session?.user) {
         setAuthState({
           user: session.user,
           isAuthenticated: true,
@@ -175,13 +176,13 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     checkSession();
   }, [checkSession]);
 
-  const value: AuthContextType = {
+  const value: AuthContextType = useMemo(() => ({
     ...authState,
     login,
     logout,
     refreshToken,
     checkSession,
-  };
+  }), [authState, login, logout, refreshToken, checkSession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

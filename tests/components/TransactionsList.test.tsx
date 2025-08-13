@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { TransactionsList } from "../../src/components/TransactionsList";
-import { Transaction } from "../../src/lib/api";
+import { Transaction } from "../../src/lib/api-client";
 
 const mockTransactions: Transaction[] = [
   {

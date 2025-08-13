@@ -1,13 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
-import {
-  XMarkIcon,
-  HomeIcon,
-  CreditCardIcon,
-  ArrowPathIcon,
-  BanknotesIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, HomeIcon, ArrowPathIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,7 +10,6 @@ interface SidebarProps {
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Accounts', href: '/accounts', icon: CreditCardIcon },
   { name: 'Transactions', href: '/transactions', icon: ArrowPathIcon },
   { name: 'Transfer', href: '/transfer', icon: BanknotesIcon },
 ];
@@ -33,7 +26,7 @@ export function Sidebar({ isOpen, onClose }: Readonly<SidebarProps>) {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden" onClick={onClose} />
+        <button className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden" onClick={onClose} />
       )}
 
       <div

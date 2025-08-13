@@ -40,7 +40,7 @@ export interface AuthResponse {
   success: boolean;
   user?: OAuth2User;
   token?: OAuth2Token;
-  session?: AuthSession; // Include the full session data for client-side storage
+  session?: AuthSession;
   message?: string;
   error?: string;
   error_description?: string;
@@ -62,7 +62,6 @@ export interface OAuth2Error {
   error_uri?: string;
 }
 
-// OAuth 2.0 Scopes
 export const OAUTH_SCOPES = {
   READ_ACCOUNTS: 'read:accounts',
   WRITE_TRANSFERS: 'write:transfers',
@@ -74,7 +73,6 @@ export const OAUTH_SCOPES = {
 
 export type OAuthScope = typeof OAUTH_SCOPES[keyof typeof OAUTH_SCOPES];
 
-// Mock OAuth 2.0 Configuration
 export const OAUTH_CONFIG = {
   CLIENT_ID: 'interswitch-banking-client',
   CLIENT_SECRET: 'mock-client-secret',
@@ -83,6 +81,6 @@ export const OAUTH_CONFIG = {
   USERINFO_ENDPOINT: '/api/auth/userinfo',
   REVOKE_ENDPOINT: '/api/auth/revoke',
   SCOPES: Object.values(OAUTH_SCOPES).join(' '),
-  ACCESS_TOKEN_EXPIRY: 3600, // 1 hour
-  REFRESH_TOKEN_EXPIRY: 2592000, // 30 days
+  ACCESS_TOKEN_EXPIRY: 3600,
+  REFRESH_TOKEN_EXPIRY: 2592000,
 } as const; 

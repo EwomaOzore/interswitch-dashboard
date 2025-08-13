@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TransferForm } from '../../../src/features/transfer/components/TransferForm';
-import { Account } from '../../../src/lib/api';
+import { Account } from '../../../src/lib/api-client';
 
 const mockAccounts: Account[] = [
   {

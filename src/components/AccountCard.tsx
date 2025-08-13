@@ -35,16 +35,10 @@ export function AccountCard({
   };
 
   return (
-    <div
-      className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+    <button
+      type="button"
+      className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-full text-left"
       onClick={() => onClick?.(account)}
-      role="button"
-      tabIndex={0}
-      onKeyPress={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          onClick?.(account);
-        }
-      }}
       aria-label={`${account.accountType} account ending in ${account.accountNumber.slice(-4)}`}
     >
       <div className="flex items-center justify-between mb-4">
@@ -96,6 +90,6 @@ export function AccountCard({
           </span>
         </div>
       </div>
-    </div>
+    </button>
   );
 }

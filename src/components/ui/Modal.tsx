@@ -41,7 +41,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: Readonl
     <div
       className="fixed inset-0 z-50 overflow-y-auto"
       aria-labelledby="modal-title"
-      role="dialog"
       aria-modal="true"
     >
       <div className="flex items-center justify-center min-h-screen p-4">

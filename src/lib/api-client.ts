@@ -42,8 +42,8 @@ interface RequestConfig extends RequestInit {
 }
 
 class ApiClient {
-  private baseURL: string;
-  private timeout: number;
+  private readonly baseURL: string;
+  private readonly timeout: number;
 
   constructor(config: ApiClientConfig) {
     this.baseURL = config.baseURL;
@@ -164,7 +164,7 @@ class ApiClient {
     if (params?.type) searchParams.append('type', params.type);
 
     const queryString = searchParams.toString();
-    const endpoint = `/api/accounts/${accountId}/transactions${queryString ? `?${queryString}` : ''}`;
+    const endpoint = '/api/accounts/' + accountId + '/transactions' + (queryString ? '?' + queryString : '');
 
     return this.request<TransactionsResponse>(endpoint, { requiresAuth: true });
   }

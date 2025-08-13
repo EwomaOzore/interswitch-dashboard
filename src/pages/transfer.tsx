@@ -6,7 +6,6 @@ import { apiClient, TransferRequest } from '../lib/api-client';
 import { TransferForm } from '../features/transfer/components/TransferForm';
 import { Layout } from '../components/layout/Layout';
 import { Modal } from '../components/ui';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export default function Transfer() {
   const router = useRouter();
@@ -53,16 +52,13 @@ export default function Transfer() {
         alert(`Transfer failed: ${result.message}`);
       }
     } catch (error) {
+      console.error('Transfer failed:', error);
       alert('Transfer failed. Please try again.');
     } finally {
       setIsTransferring(false);
       setIsConfirmModalOpen(false);
       setTransferData(null);
     }
-  };
-
-  const handleBack = () => {
-    router.push('/dashboard');
   };
 
   if (accountsLoading) {
@@ -99,18 +95,8 @@ export default function Transfer() {
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={handleBack}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeftIcon className="h-4 w-4" />
-            <span>Back to Dashboard</span>
-          </button>
-        </div>
-
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Transfer Funds</h1>
+          <h1 className="text-xl font-extrabold text-gray-900">Transfer Funds</h1>
           <p className="text-gray-600">Transfer money between your accounts or to other accounts</p>
         </div>
 

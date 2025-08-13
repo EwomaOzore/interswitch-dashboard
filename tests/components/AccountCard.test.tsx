@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AccountCard } from "../../src/components/AccountCard";
-import { Account } from "../../src/lib/api";
+import { Account } from "../../src/lib/api-client";
 
 const mockAccount: Account = {
   id: "1",

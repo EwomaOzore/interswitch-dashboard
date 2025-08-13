@@ -81,52 +81,56 @@ export function debounce<T extends (...args: any[]) => void>(
 }
 
 export function encryptSensitiveData(data: string): Promise<string> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const encoder = new TextEncoder();
-      const dataBuffer = encoder.encode(data);
+  return new Promise((resolve, reject) => {
+    (async () => {
+      try {
+        const encoder = new TextEncoder();
+        const dataBuffer = encoder.encode(data);
 
-      const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
-        'encrypt',
-      ]);
+        const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
+          'encrypt',
+        ]);
 
-      const iv = crypto.getRandomValues(new Uint8Array(12));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
 
-      const encryptedData = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, dataBuffer);
+        const encryptedData = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, dataBuffer);
 
-      const encryptedArray = new Uint8Array(encryptedData);
+        const encryptedArray = new Uint8Array(encryptedData);
 
-      const base64 = btoa(String.fromCharCode(...encryptedArray));
-      resolve(base64);
-    } catch (error) {
-      reject(error);
-    }
+        const base64 = btoa(String.fromCharCode(...encryptedArray));
+        resolve(base64);
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    })();
   });
 }
 
 export function decryptSensitiveData(encryptedData: string): Promise<string> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const decoder = new TextDecoder();
-      const encryptedArray = new Uint8Array(
-        atob(encryptedData)
-          .split('')
-          .map((char) => char.charCodeAt(0))
-      );
+  return new Promise((resolve, reject) => {
+    (async () => {
+      try {
+        const decoder = new TextDecoder();
+        const encryptedArray = new Uint8Array(
+          atob(encryptedData)
+            .split('')
+            .map((char) => char.charCodeAt(0))
+        );
 
-      const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
-        'decrypt',
-      ]);
+        const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
+          'decrypt',
+        ]);
 
-      const iv = encryptedArray.slice(0, 12);
-      const data = encryptedArray.slice(12);
+        const iv = encryptedArray.slice(0, 12);
+        const data = encryptedArray.slice(12);
 
-      const decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+        const decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 
-      const decryptedText = decoder.decode(decryptedData);
-      resolve(decryptedText);
-    } catch (error) {
-      reject(error);
-    }
+        const decryptedText = decoder.decode(decryptedData);
+        resolve(decryptedText);
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    })();
   });
 }

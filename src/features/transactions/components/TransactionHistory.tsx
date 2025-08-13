@@ -1,5 +1,5 @@
 import React from 'react';
-import { Transaction } from '../../../lib/api';
+import { Transaction } from '../../../lib/api-client';
 import { TransactionsList } from '../../../components/TransactionsList';
 
 interface TransactionHistoryProps {

@@ -115,24 +115,24 @@ export default function Login() {
             </button>
 
             <div className="text-center">
-              <a
-                href="#"
-                className="text-sm text-interswitch-primary hover:text-interswitch-dark hover:underline"
+              <button
+                type="button"
+                className="text-sm text-interswitch-primary hover:text-interswitch-dark hover:underline bg-transparent border-none p-0 cursor-pointer"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
           </form>
         </div>
         <div className="mt-8 text-center pt-6">
           <p className="text-sm text-gray-600">
             New to Interswitch Banking?{' '}
-            <a
-              href="#"
-              className="text-interswitch-primary hover:text-interswitch-dark hover:underline font-medium"
+            <button
+              type="button"
+              className="text-interswitch-primary hover:text-interswitch-dark hover:underline font-medium bg-transparent border-none p-0 cursor-pointer"
             >
               Sign up
-            </a>
+            </button>
           </p>
         </div>
 

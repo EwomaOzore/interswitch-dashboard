@@ -15,7 +15,6 @@ export interface PaginatedResponse<T> {
   hasMore: boolean;
 }
 
-
 export interface AccountsResponse {
   accounts: Account[];
   totalCount: number;
@@ -33,7 +32,6 @@ export interface TransactionsResponse {
   hasMore: boolean;
 }
 
-// Transfer API responses
 export interface TransferResponse {
   transferId: string;
   status: 'pending' | 'success' | 'failed';
@@ -47,7 +45,6 @@ export interface ApiError {
   details?: Record<string, any>;
 }
 
-// API request types
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -64,5 +61,4 @@ export interface FilterParams {
   category?: string;
 }
 
-// Combined params for common API calls
 export type ListParams = PaginationParams & DateRangeParams & FilterParams;

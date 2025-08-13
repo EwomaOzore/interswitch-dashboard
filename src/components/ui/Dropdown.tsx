@@ -37,19 +37,6 @@ export function Dropdown({
 
   const selectedOption = options.find((option) => option.value === value);
 
-  const sizeClasses = {
-    sm: 'p-1 text-sm',
-    md: 'p-2 text-sm',
-    lg: 'p-3 text-base',
-  };
-
-  const variantClasses = {
-    default:
-      'bg-white border-gray-300 focus:ring-interswitch-primary focus:border-interswitch-primary',
-    outline:
-      'bg-transparent border-gray-300 focus:ring-interswitch-primary focus:border-interswitch-primary',
-  };
-
   const handleToggle = () => {
     if (!disabled) {
       setIsOpen(!isOpen);
@@ -78,13 +65,19 @@ export function Dropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
+  const sizeClass = (() => {
+    if (size === 'sm') return 'p-1.5 text-xs';
+    if (size === 'lg') return 'p-3 text-base';
+    return 'p-2 text-sm';
+  })();
+  const variantClass = variant === 'default' 
+    ? 'bg-white border-gray-300 focus:ring-interswitch-primary focus:border-interswitch-primary hover:border-gray-400 cursor-pointer'
+    : 'bg-transparent border-gray-300 focus:ring-interswitch-primary focus:border-interswitch-primary hover:border-gray-400 cursor-pointer';
+  
   const buttonClasses = `
     w-full flex items-center justify-between rounded-md border transition-colors
-    ${size === 'sm' ? 'p-1.5 text-xs' : size === 'lg' ? 'p-3 text-base' : 'p-2 text-sm'}
-    ${variant === 'default' 
-      ? 'bg-white border-gray-300 focus:ring-interswitch-primary focus:border-interswitch-primary hover:border-gray-400 cursor-pointer'
-      : 'bg-transparent border-gray-300 focus:ring-interswitch-primary focus:border-interswitch-primary hover:border-gray-400 cursor-pointer'
-    }
+    ${sizeClass}
+    ${variantClass}
     ${disabled ? 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-50' : ''}
     ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
     ${className}
@@ -113,12 +106,10 @@ export function Dropdown({
 
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
-          <ul role="listbox" className="py-1">
+          <ul className="py-1">
             {options.map((option) => (
               <li 
                 key={option.value} 
-                role="option" 
-                aria-selected={option.value === value}
               >
                 <button
                   type="button"

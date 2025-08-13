@@ -41,7 +41,7 @@ class EncryptedStorage implements SecureStorage {
 }
 
 export class SessionStorage {
-  private storage: SecureStorage;
+  private readonly storage: SecureStorage;
 
   constructor() {
     this.storage = new EncryptedStorage();
@@ -65,7 +65,7 @@ export class SessionStorage {
 }
 
 export class LocalStorage {
-  private storage: SecureStorage;
+  private readonly storage: SecureStorage;
 
   constructor() {
     this.storage = new EncryptedStorage();

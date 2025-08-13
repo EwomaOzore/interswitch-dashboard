@@ -151,6 +151,7 @@ export async function getAuthSession(): Promise<AuthSession | null> {
 
     return session;
   } catch (error) {
+    console.error('Failed to get auth session:', error);
     await clearAuthSession();
     return null;
   }
@@ -237,7 +238,7 @@ export function getAuthorizationHeader(token: string): string {
 }
 
 export function extractTokenFromHeader(authHeader: string): string | null {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return null;
   }
   return authHeader.substring(7);
