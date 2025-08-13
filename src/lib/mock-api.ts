@@ -1,5 +1,6 @@
-import { Account, Transaction, TransferRequest } from '../../src/lib/api-client';
+import { Account, Transaction } from './api-client';
 
+// Mock accounts data
 export const mockAccounts: Account[] = [
   {
     id: '1',
@@ -45,27 +46,7 @@ export const mockTransactions: Transaction[] = [
   },
 ];
 
-// Mock transfer request
-export const mockTransferRequest: TransferRequest = {
-  sourceAccountId: '1',
-  beneficiaryAccountNumber: '1111111111',
-  amount: 5000,
-  description: 'Test transfer',
-  pin: '1234',
-};
-
-// Mock API client
-export const mockApiClient = {
-  getAccounts: jest.fn().mockResolvedValue({ accounts: mockAccounts }),
-  getAccount: jest.fn().mockResolvedValue({ account: mockAccounts[0] }),
-  getTransactions: jest.fn().mockResolvedValue({
-    transactions: mockTransactions,
-    totalCount: mockTransactions.length,
-    hasMore: false,
-  }),
-  initiateTransfer: jest.fn().mockResolvedValue({
-    transferId: 'TXN_123',
-    status: 'success',
-    message: 'Transfer successful',
-  }),
+export const mockApi = {
+  accounts: mockAccounts,
+  transactions: mockTransactions,
 };

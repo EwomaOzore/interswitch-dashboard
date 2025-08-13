@@ -2,6 +2,35 @@ import { getAuthSession, getRefreshToken } from './auth-utils';
 import { OAuth2Error } from '../types/auth';
 import { AccountsResponse, AccountResponse, TransactionsResponse, TransferResponse } from '../types/api';
 
+export interface Account {
+  id: string;
+  accountNumber: string;
+  accountType: 'Savings' | 'Current' | 'Loan';
+  balance: number;
+  currency: string;
+  lastTransactionDate: string;
+  status: 'active' | 'inactive' | 'frozen';
+}
+
+export interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: 'debit' | 'credit';
+  balanceAfter: number;
+  reference?: string;
+  category?: string;
+}
+
+export interface TransferRequest {
+  sourceAccountId: string;
+  beneficiaryAccountNumber: string;
+  amount: number;
+  description: string;
+  pin: string;
+}
+
 interface ApiClientConfig {
   baseURL: string;
   timeout?: number;

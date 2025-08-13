@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Account, TransferRequest } from '../../../lib/api';
+import { Account, TransferRequest } from '../../../lib/api-client';
 import { formatCurrency } from '../../../lib/utils';
+import { Dropdown, Input } from '../../../components/ui';
+import { DropdownOption } from '../../../components/ui/Dropdown';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const TransferFormSchema = z.object({
   sourceAccountId: z.string().min(1, 'Please select a source account'),
@@ -26,7 +29,7 @@ const TransferFormSchema = z.object({
     .string()
     .min(4, 'PIN must be 4 digits')
     .max(4, 'PIN must be 4 digits')
-    .regex(/^\d+$/, 'PIN must contain only digits'),
+    .regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
 });
 
 type TransferFormData = z.infer<typeof TransferFormSchema>;
@@ -42,11 +45,14 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
 
   const {
+    control,
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
     reset,
+    trigger,
   } = useForm<TransferFormData>({
     resolver: zodResolver(TransferFormSchema),
     mode: 'onSubmit',
@@ -71,33 +77,45 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
     reset();
   };
 
+
+
+  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numericValue = value.replace(/\D/g, '').slice(0, 4);
+    e.target.value = numericValue;
+    return numericValue;
+  };
+
   const isAmountValid = selectedAccount && amount && amount <= selectedAccount.balance;
+
+  const sourceAccountOptions: DropdownOption[] = accounts.map((account) => ({
+    value: account.id,
+    label: `${account.accountType} - ****${account.accountNumber.slice(-4)} (${formatCurrency(account.balance, account.currency)})`,
+  }));
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <div>
-        <label htmlFor="sourceAccountId" className="block text-sm font-medium text-gray-700 mb-2">
-          From Account *
-        </label>
-        <select
-          {...register('sourceAccountId')}
-          id="sourceAccountId"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-transparent"
-          aria-describedby={errors.sourceAccountId ? 'sourceAccountId-error' : undefined}
-        >
-          <option value="">Select account</option>
-          {accounts.map((account) => (
-            <option key={account.id} value={account.id}>
-              {account.accountType} - ****{account.accountNumber.slice(-4)}(
-              {formatCurrency(account.balance, account.currency)})
-            </option>
-          ))}
-        </select>
-        {errors.sourceAccountId && (
-          <p id="sourceAccountId-error" className="mt-1 text-sm text-danger" role="alert">
-            {errors.sourceAccountId.message}
-          </p>
-        )}
+        <Controller
+          name="sourceAccountId"
+          control={control}
+          render={({ field, fieldState }) => (
+            <>
+              <Dropdown
+                options={sourceAccountOptions}
+                value={field.value || ''}
+                onChange={(value) => {
+                  field.onChange(value);
+                }}
+                placeholder="Select account"
+                label="From Account *"
+                size="md"
+                error={fieldState.error?.message}
+              />
+              <input type="hidden" {...field} />
+            </>
+          )}
+        />
       </div>
 
       {selectedAccount && (
@@ -111,59 +129,32 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
         </div>
       )}
 
-      <div>
-        <label
-          htmlFor="beneficiaryAccountNumber"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          To Account Number *
-        </label>
-        <input
-          {...register('beneficiaryAccountNumber')}
-          type="text"
-          id="beneficiaryAccountNumber"
-          placeholder="Enter 10-digit account number"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-transparent"
-          aria-describedby={
-            errors.beneficiaryAccountNumber ? 'beneficiaryAccountNumber-error' : undefined
-          }
-        />
-        {errors.beneficiaryAccountNumber && (
-          <p id="beneficiaryAccountNumber-error" className="mt-1 text-sm text-danger" role="alert">
-            {errors.beneficiaryAccountNumber.message}
-          </p>
-        )}
-      </div>
+      <Input
+        label="To Account Number *"
+        id="beneficiaryAccountNumber"
+        type="text"
+        placeholder="Enter 10-digit account number"
+        error={errors.beneficiaryAccountNumber?.message}
+        {...register('beneficiaryAccountNumber')}
+      />
 
-      <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
-          Amount (NGN) *
-        </label>
-        <input
-          {...register('amount')}
-          type="number"
-          step="0.01"
-          min="0"
-          id="amount"
-          placeholder="0.00"
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-transparent ${
-            amount && selectedAccount && amount > selectedAccount.balance
-              ? 'border-danger'
-              : 'border-gray-300'
-          }`}
-          aria-describedby={errors.amount ? 'amount-error' : undefined}
-        />
-        {errors.amount && (
-          <p id="amount-error" className="mt-1 text-sm text-danger" role="alert">
-            {errors.amount.message}
-          </p>
-        )}
-        {amount && selectedAccount && amount > selectedAccount.balance && (
-          <p className="mt-1 text-sm text-danger" role="alert">
-            Amount exceeds available balance
-          </p>
-        )}
-      </div>
+      <Input
+        label="Amount (NGN) *"
+        id="amount"
+        type="number"
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        error={errors.amount?.message}
+        className={amount && selectedAccount && amount > selectedAccount.balance ? 'border-danger' : ''}
+        {...register('amount')}
+      />
+
+      {amount && selectedAccount && amount > selectedAccount.balance && (
+        <p className="mt-1 text-sm text-danger" role="alert">
+          Amount exceeds available balance
+        </p>
+      )}
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
@@ -189,21 +180,37 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
           Transaction PIN *
         </label>
         <div className="relative">
-          <input
-            {...register('pin')}
-            type={showPin ? 'text' : 'password'}
-            id="pin"
-            placeholder="Enter 4-digit PIN"
-            className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-transparent"
-            aria-describedby={errors.pin ? 'pin-error' : undefined}
+          <Controller
+            name="pin"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type={showPin ? 'text' : 'password'}
+                id="pin"
+                placeholder="Enter 4-digit PIN"
+                className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-transparent"
+                onChange={(e) => {
+                  const numericValue = handlePinChange(e);
+                  field.onChange(numericValue);
+                }}
+                maxLength={4}
+                inputMode="numeric"
+                autoComplete="off"
+              />
+            )}
           />
           <button
             type="button"
             onClick={() => setShowPin(!showPin)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:ring-offset-1 rounded"
             aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
           >
-            {showPin ? '🙈' : '👁️'}
+            {showPin ? (
+              <EyeSlashIcon className="h-3 w-3" />
+            ) : (
+              <EyeIcon className="h-3 w-3" />
+            )}
           </button>
         </div>
         {errors.pin && (

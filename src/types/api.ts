@@ -1,4 +1,4 @@
-import { Account, Transaction } from '../lib/api';
+import { Account, Transaction } from '../lib/api-client';
 
 export interface ApiResponse<T> {
   success: boolean;

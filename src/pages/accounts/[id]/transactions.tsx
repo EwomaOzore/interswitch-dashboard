@@ -5,9 +5,10 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { apiClient } from '../../../lib/api-client';
 import { TransactionsList } from '../../../components/TransactionsList';
 import { Layout } from '../../../components/layout/Layout';
-import { Button } from '../../../components/ui';
+import { Button, Dropdown } from '../../../components/ui';
 import { downloadCSV } from '../../../lib/utils';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { DropdownOption } from '../../../components/ui/Dropdown';
 
 export default function AccountTransactions() {
   const router = useRouter();
@@ -16,6 +17,12 @@ export default function AccountTransactions() {
   const [filterType, setFilterType] = useState<'all' | 'debit' | 'credit'>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const transactionTypeOptions: DropdownOption[] = [
+    { value: 'all', label: 'All Transactions' },
+    { value: 'credit', label: 'Credits Only' },
+    { value: 'debit', label: 'Debits Only' },
+  ];
 
   const {
     data: accountResponse,
@@ -127,15 +134,13 @@ export default function AccountTransactions() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Transaction Type
               </label>
-              <select
+              <Dropdown
+                options={transactionTypeOptions}
                 value={filterType}
-                onChange={(e) => setFilterType(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary"
-              >
-                <option value="all">All Transactions</option>
-                <option value="credit">Credits Only</option>
-                <option value="debit">Debits Only</option>
-              </select>
+                onChange={(value) => setFilterType(value as 'all' | 'debit' | 'credit')}
+                placeholder="Select transaction type"
+                size="md"
+              />
             </div>
 
             <div>

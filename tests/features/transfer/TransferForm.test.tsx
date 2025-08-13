@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { TransferForm } from "../../../src/features/transfer/components/TransferForm";
-import { Account } from "../../../src/lib/api";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { TransferForm } from '../../../src/features/transfer/components/TransferForm';
+import { Account } from '../../../src/lib/api';
 
 const mockAccounts: Account[] = [
   {
@@ -34,7 +35,7 @@ describe("TransferForm", () => {
   it("renders all form fields", () => {
     render(<TransferForm accounts={mockAccounts} onSubmit={mockOnSubmit} />);
 
-    expect(screen.getByLabelText(/from account/i)).toBeInTheDocument();
+    expect(screen.getByText(/from account/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/to account number/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/amount/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
@@ -45,8 +46,13 @@ describe("TransferForm", () => {
     const user = userEvent.setup();
     render(<TransferForm accounts={mockAccounts} onSubmit={mockOnSubmit} />);
 
-    const sourceSelect = screen.getByLabelText(/from account/i);
-    await user.selectOptions(sourceSelect, "1");
+    const sourceDropdown = screen.getByText(/from account/i).closest('div')?.querySelector('button');
+    expect(sourceDropdown).toBeInTheDocument();
+    
+    await user.click(sourceDropdown!);
+    
+    const firstOption = screen.getByText(/Savings - \*\*\*\*7890/);
+    await user.click(firstOption);
 
     expect(screen.getByText(/available balance/i)).toBeInTheDocument();
     const balanceElements = screen.getAllByText(/₦150,000.00/);
@@ -88,8 +94,11 @@ describe("TransferForm", () => {
     const user = userEvent.setup();
     render(<TransferForm accounts={mockAccounts} onSubmit={mockOnSubmit} />);
 
-    const sourceSelect = screen.getByLabelText(/from account/i);
-    await user.selectOptions(sourceSelect, "1");
+    const sourceDropdown = screen.getByText(/from account/i).closest('div')?.querySelector('button');
+    await user.click(sourceDropdown!);
+    
+    const firstOption = screen.getByText(/Savings - \*\*\*\*7890/);
+    await user.click(firstOption);
 
     const amountInput = screen.getByLabelText(/amount/i);
     await user.type(amountInput, "200000");
@@ -110,7 +119,12 @@ describe("TransferForm", () => {
     const user = userEvent.setup();
     render(<TransferForm accounts={mockAccounts} onSubmit={mockOnSubmit} />);
 
-    await user.selectOptions(screen.getByLabelText(/from account/i), "1");
+    // Select source account
+    const sourceDropdown = screen.getByText(/from account/i).closest('div')?.querySelector('button');
+    await user.click(sourceDropdown!);
+    const firstOption = screen.getByText(/Savings - \*\*\*\*7890/);
+    await user.click(firstOption);
+    
     await user.type(screen.getByLabelText(/to account number/i), "1111111111");
     await user.type(screen.getByLabelText(/amount/i), "5000");
     await user.type(screen.getByLabelText(/description/i), "Test transfer");

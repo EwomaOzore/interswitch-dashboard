@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
-import { apiClient } from '../lib/api-client';
-import { Account } from '../lib/api';
+import { apiClient, Account } from '../lib/api-client';
 import { AccountCard } from '../components/AccountCard';
 import { Layout } from '../components/layout/Layout';
+import { Dropdown } from '../components/ui';
+import { DropdownOption } from '../components/ui/Dropdown';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -31,9 +32,8 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  const accounts = accountsResponse?.accounts || [];
-
   const filteredAndSortedAccounts = React.useMemo(() => {
+    const accounts = accountsResponse?.accounts || [];
     let filtered = accounts;
 
     if (filterType !== 'all') {
@@ -52,7 +52,7 @@ export default function Dashboard() {
 
       return sortOrder === 'desc' ? -compareValue : compareValue;
     });
-  }, [accounts, filterType, sortBy, sortOrder]);
+  }, [accountsResponse?.accounts, filterType, sortBy, sortOrder]);
 
   React.useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -103,6 +103,18 @@ export default function Dashboard() {
     );
   }
 
+  const accountTypeOptions: DropdownOption[] = [
+    { value: 'all', label: 'All Accounts' },
+    { value: 'Savings', label: 'Savings' },
+    { value: 'Current', label: 'Current' },
+    { value: 'Loan', label: 'Loan' },
+  ];
+
+  const sortByOptions: DropdownOption[] = [
+    { value: 'balance', label: 'Sort by Balance' },
+    { value: 'lastTransaction', label: 'Sort by Last Transaction' },
+  ];
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -112,36 +124,30 @@ export default function Dashboard() {
             <p className="text-gray-600">Manage your accounts and transactions</p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4"> 
-            <select
+          <div className="flex flex-col justify-center items-center sm:flex-row gap-2">
+            <Dropdown
+              options={accountTypeOptions}
               value={filterType}
-              onChange={(e) => setFilterType(e.target.value as Account['accountType'] | 'all')}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary"
+              onChange={(value) => setFilterType(value as Account['accountType'] | 'all')}
+              placeholder="Select account type"
+              size="md"
+            />
+
+            <Dropdown
+              options={sortByOptions}
+              value={sortBy}
+              onChange={(value) => setSortBy(value as 'balance' | 'lastTransaction')}
+              placeholder="Select sort option"
+              size="md"
+            />
+
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-interswitch-primary"
+              aria-label={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
             >
-              <option value="all">All Accounts</option>
-              <option value="Savings">Savings</option>
-              <option value="Current">Current</option>
-              <option value="Loan">Loan</option>
-            </select>
-
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'balance' | 'lastTransaction')}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-interswitch-primary"
-              >
-                <option value="balance">Sort by Balance</option>
-                <option value="lastTransaction">Sort by Last Transaction</option>
-              </select>
-
-              <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-interswitch-primary"
-                aria-label={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
-              >
-                {sortOrder === 'asc' ? '↑' : '↓'}
-              </button>
-            </div>
+              {sortOrder === 'asc' ? '↑' : '↓'}
+            </button>
           </div>
         </div>
 

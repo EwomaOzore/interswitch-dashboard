@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { withAuth, AuthenticatedRequest } from '../../../../lib/auth-middleware';
-import { mockApi } from '../../../../lib/api';
+import { mockApi } from '../../../../lib/mock-api';
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       error: 'method_not_allowed',
-      error_description: 'Only GET method is allowed' 
+      error_description: 'Only GET method is allowed'
     });
   }
 
@@ -20,7 +20,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Find the account in mock data
     const account = mockApi.accounts.find(acc => acc.id === id);
 
     if (!account) {

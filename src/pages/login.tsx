@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../contexts/AuthContext';
+import { Input } from '../components/ui';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
 const loginSchema = z.object({
@@ -16,6 +18,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function Login() {
   const router = useRouter();
   const { login, error, isLoading } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -54,35 +57,46 @@ export default function Login() {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-interswitch-primary"
-                placeholder="Enter your email"
-                {...register('email')}
-              />
-              {errors.email && <p className="mt-1 text-sm text-danger">{errors.email.message}</p>}
-            </div>
+            <Input
+              label="Email"
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+              error={errors.email?.message}
+              {...register('email')}
+            />
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-interswitch-primary"
-                placeholder="Enter your password"
-                {...register('password')}
-              />
+              <div className="relative">
+                <input
+                  {...register('password')}
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:border-interswitch-primary"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-interswitch-primary focus:ring-offset-1 rounded"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-3 w-3" />
+                  ) : (
+                    <EyeIcon className="h-3 w-3" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-danger">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-danger" role="alert">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 

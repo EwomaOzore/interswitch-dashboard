@@ -1,5 +1,5 @@
 import React from "react";
-import { Account } from "../lib/api";
+import { Account } from "../lib/api-client";
 import { formatCurrency, maskAccountNumber } from "../lib/utils";
 import { format } from "date-fns";
 

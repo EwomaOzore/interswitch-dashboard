@@ -17,7 +17,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">{children}</div>
+          <div className="">{children}</div>
         </main>
       </div>
     </div>

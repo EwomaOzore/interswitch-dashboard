@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { withAuth, AuthenticatedRequest } from '../../../../lib/auth-middleware';
-import { mockApi } from '../../../../lib/api';
+import { mockApi } from '../../../../lib/mock-api';
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       error: 'method_not_allowed',
-      error_description: 'Only GET method is allowed' 
+      error_description: 'Only GET method is allowed'
     });
   }
 
@@ -21,7 +21,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Find the account in mock data
     const account = mockApi.accounts.find(acc => acc.id === id);
 
     if (!account) {
@@ -31,15 +30,12 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Filter transactions based on query parameters
     let filteredTransactions = [...mockApi.transactions];
 
-    // Filter by type (debit/credit)
     if (type && (type === 'debit' || type === 'credit')) {
       filteredTransactions = filteredTransactions.filter(txn => txn.type === type);
     }
 
-    // Filter by date range
     if (startDate) {
       const start = new Date(startDate as string);
       filteredTransactions = filteredTransactions.filter(txn => new Date(txn.date) >= start);
@@ -50,7 +46,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       filteredTransactions = filteredTransactions.filter(txn => new Date(txn.date) <= end);
     }
 
-    // Pagination
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
     const startIndex = (pageNum - 1) * limitNum;

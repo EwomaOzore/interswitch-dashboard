@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { apiClient } from '../lib/api-client';
-import { TransferRequest } from '../lib/api';
+import { apiClient, TransferRequest } from '../lib/api-client';
 import { TransferForm } from '../features/transfer/components/TransferForm';
 import { Layout } from '../components/layout/Layout';
 import { Modal } from '../components/ui';
@@ -129,7 +128,7 @@ export default function Transfer() {
           title="Confirm Transfer"
         >
           {transferData && (
-            <div className="space-y-4">
+            <div className="space-y-4 max-w-md">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-2">Transfer Details</h4>
                 <div className="space-y-2 text-sm">

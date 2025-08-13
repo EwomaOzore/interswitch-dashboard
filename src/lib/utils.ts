@@ -80,28 +80,6 @@ export function debounce<T extends (...args: any[]) => void>(
   };
 }
 
-export function generateTransactionId(): string {
-  const timestamp = Date.now().toString(36);
-  const randomPart = Math.random().toString(36).substr(2, 5);
-  return `TXN_${timestamp}_${randomPart}`.toUpperCase();
-}
-
-export function validateAccountNumber(accountNumber: string): boolean {
-  const cleaned = accountNumber.replace(/\D/g, '');
-  return cleaned.length === 10;
-}
-
-export function formatPhoneNumber(phone: string): string {
-  const cleaned = phone.replace(/\D/g, '');
-  if (cleaned.length === 11 && cleaned.startsWith('0')) {
-    return `+234${cleaned.slice(1)}`;
-  }
-  if (cleaned.length === 10) {
-    return `+234${cleaned}`;
-  }
-  return phone;
-}
-
 export function encryptSensitiveData(data: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {

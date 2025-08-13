@@ -1,5 +1,5 @@
 import type { NextApiResponse } from 'next';
-import { mockApi } from '../../../lib/api';
+import { mockApi } from '../../../lib/mock-api';
 
 async function handler(req: any, res: NextApiResponse) {
   if (req.method !== 'GET') {

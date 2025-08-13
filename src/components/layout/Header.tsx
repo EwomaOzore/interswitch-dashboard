@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Bars3Icon, BellIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -23,7 +24,12 @@ export function Header({ onMenuClick }: Readonly<HeaderProps>) {
             </button>
 
             <div className="ml-4 lg:ml-0">
-              <h1 className="text-xl font-semibold text-interswitch-dark">Interswitch Banking</h1>
+              <Image
+                src="/Interswitch_logo.svg"
+                alt="Interswitch Banking"
+                width={150}
+                height={150}
+              />
             </div>
           </div>
 
