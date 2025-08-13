@@ -11,12 +11,9 @@ export function withAuth(
 ) {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
     try {
-      console.log('Auth Middleware - Request headers:', req.headers);
       const authHeader = req.headers.authorization;
-      console.log('Auth Middleware - Authorization header:', authHeader);
       
       if (!authHeader) {
-        console.log('Auth Middleware - No authorization header');
         return res.status(401).json({
           error: 'unauthorized',
           error_description: 'Authorization header is required',
@@ -24,10 +21,8 @@ export function withAuth(
       }
 
       const token = extractTokenFromHeader(authHeader);
-      console.log('Auth Middleware - Extracted token:', token);
       
       if (!token) {
-        console.log('Auth Middleware - Invalid authorization header format');
         return res.status(401).json({
           error: 'unauthorized',
           error_description: 'Invalid authorization header format',
@@ -35,10 +30,8 @@ export function withAuth(
       }
 
       const isValid = validateToken(token);
-      console.log('Auth Middleware - Token validation result:', isValid);
       
       if (!isValid) {
-        console.log('Auth Middleware - Token is expired or invalid');
         return res.status(401).json({
           error: 'invalid_token',
           error_description: 'Token is expired or invalid',
@@ -46,10 +39,8 @@ export function withAuth(
       }
 
       const user = getUserById('1');
-      console.log('Auth Middleware - User lookup result:', user);
       
       if (!user) {
-        console.log('Auth Middleware - User not found');
         return res.status(401).json({
           error: 'invalid_token',
           error_description: 'User not found',
@@ -57,7 +48,6 @@ export function withAuth(
       }
 
       req.user = user;
-      console.log('Auth Middleware - Authentication successful, user set:', req.user);
 
       await handler(req, res);
     } catch (error) {
