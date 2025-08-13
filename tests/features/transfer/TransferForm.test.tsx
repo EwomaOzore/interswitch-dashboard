@@ -49,7 +49,8 @@ describe("TransferForm", () => {
     await user.selectOptions(sourceSelect, "1");
 
     expect(screen.getByText(/available balance/i)).toBeInTheDocument();
-    expect(screen.getByText(/₦150,000.00/)).toBeInTheDocument();
+    const balanceElements = screen.getAllByText(/₦150,000.00/);
+    expect(balanceElements).toHaveLength(2);
   });
 
   it("validates required fields", async () => {
@@ -59,9 +60,11 @@ describe("TransferForm", () => {
     const submitButton = screen.getByText("Transfer Funds");
     await user.click(submitButton);
 
-    expect(
-      screen.getByText(/please select a source account/i),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/please select a source account/i),
+      ).toBeInTheDocument();
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -107,7 +110,6 @@ describe("TransferForm", () => {
     const user = userEvent.setup();
     render(<TransferForm accounts={mockAccounts} onSubmit={mockOnSubmit} />);
 
-    // Fill form with valid data
     await user.selectOptions(screen.getByLabelText(/from account/i), "1");
     await user.type(screen.getByLabelText(/to account number/i), "1111111111");
     await user.type(screen.getByLabelText(/amount/i), "5000");

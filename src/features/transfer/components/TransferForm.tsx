@@ -49,7 +49,7 @@ export function TransferForm({ accounts, onSubmit, isLoading }: Readonly<Transfe
     reset,
   } = useForm<TransferFormData>({
     resolver: zodResolver(TransferFormSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
   });
 
   const sourceAccountId = watch('sourceAccountId');
