@@ -370,7 +370,7 @@ export function TransactionsList({
         </div>
       )}
 
-      {hasMore && (
+      {/* {hasMore && (
         <div className="p-4 border-t border-gray-200 text-center">
           <button
             onClick={onLoadMore}
@@ -380,7 +380,7 @@ export function TransactionsList({
             {isLoading ? 'Loading...' : 'Load More Transactions'}
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
